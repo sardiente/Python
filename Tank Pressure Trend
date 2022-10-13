@@ -1,6 +1,6 @@
 #!/usr/local/bin/python3
 
-#Plotting Pressure Difference Over Time
+#Plotting Net Pressure Difference Over Time
 
 import pandas as pd
 import numpy as np
