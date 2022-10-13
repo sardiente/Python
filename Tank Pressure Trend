@@ -1,0 +1,30 @@
+#!/usr/local/bin/python3
+
+#Plotting Pressure Difference Over Time
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+col_names = ['Time', 'Path', 'Value', 'Unit', 'Status']
+
+file_path = r"C:\Users\USERNAME\LOCATION\LOCATION\FILENAME.csv"
+df = pd.read_csv(file_path, names = col_names)
+
+df = df.drop('Path', axis = 1)
+df = df.drop('Unit', axis = 1)
+df = df.drop('Status', axis = 1)
+df['Time'] = pd.to_datetime(df['Time'])
+
+initial_pressure = 15.61
+
+df['Net Pressure Drop'] = initial_pressure - df['Value']
+
+fig, ax = plt.subplots(figsize=(10,5))
+ax.plot(df['Time'], df['Net Pressure Drop'])
+
+ax.set(title = "T9 Net Pressure Drop over 7 Days")
+ax.set(xlabel = "DateTime [Day/Time]")
+ax.set(ylabel = "Net Pressure Drop [psig]")
+
+plt.show()
