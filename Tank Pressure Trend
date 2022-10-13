@@ -16,7 +16,7 @@ df = df.drop('Unit', axis = 1)
 df = df.drop('Status', axis = 1)
 df['Time'] = pd.to_datetime(df['Time'])
 
-initial_pressure = 15.61
+initial_pressure = 'PSI value'
 
 df['Net Pressure Drop'] = initial_pressure - df['Value']
 
