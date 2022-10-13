@@ -1,6 +1,6 @@
 #!/usr/local/bin/python3
 
-#Plotting Net Pressure Difference Over Time
+#Short script that Plots Net Pressure Difference Over Time
 
 import pandas as pd
 import numpy as np
