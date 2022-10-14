@@ -1,0 +1,121 @@
+from seeq import spy
+import pandas as pd
+import numpy as np
+import os
+import math
+import warnings
+
+#Program calls Seeq to retrieve cilincal fill data from PI Historian and removes zero and negative fill weight values, cleans the data, and sets-up file
+#to be run in VBA for Porcess Capability calculation
+ 
+address = 'https://address'
+login_file = r'C:\Users\Username\Location\Location\log.txt'
+ 
+login = pd.read_csv(login_file, header = None)
+ 
+user = login.loc[0,0]
+mypass = login.loc[1,0]
+ 
+spy.login(url = address,
+            username = user,
+            password = mypass,
+            force = False,
+            ignore_ssl_errors = True,
+            directory = 'Domain Credentials')
+ 
+workbook_url = 'https://URL'
+
+results = spy.search(workbook_url)
+
+data = spy.pull(results, start = 'start_date', end = 'end_date', grid = None, tz_convert = 'America/Los_Angeles')
+filename = 'filename.csv'
+data.to_csv(filename)
+
+warnings.filterwarnings('ignore')
+file = os.path.join('C:\\Users\\Username\\Location\\Location\\', filename)
+data = pd.read_csv(file)
+ 
+data.columns = ['time',
+               'BatchID',
+               'NetWeight_1',
+               'NetWeight_2',
+               'NetWeight_3',
+               'NetWeight_4',
+               'NetWeight_5',
+               'LAL',
+               'UAL']
+ 
+data.drop(columns=['time',], inplace = True)
+data.loc[:,['BatchID', 'LAL', 'UAL']] = data.loc[:,['BatchID', 'LAL', 'UAL']].ffill()
+ 
+data = data[round(data['NetWeight_1'],2) != 0] #remove all values ~0
+data = data.dropna(subset = ['NetWeight_1'])
+data = data.reset_index(drop = True)
+data['BatchID'] = data['BatchID'].astype(str)
+ 
+#iloc = [row, col]
+ 
+#deletes last occurance of lot
+ 
+# for i in data.index:
+#     if i == len(data.index)-1:
+#         break
+#     if data['BatchID'][i] == data['BatchID'][i+1]:
+#         pass
+#     else:
+#         data = data.drop(i)
+#         data = data.reset_index(drop = True)
+ 
+#removing OOS, loop over columns then loop over rows
+ 
+NetWeight_Col = [1, 2, 3, 4, 5]
+ 
+#removes any OOS
+for c in NetWeight_Col:
+    for r in data.index:
+        if r == len(data.index)-1:
+            break
+        if data.iloc[r,c] < data.iloc[r,6] or data.iloc[r,c] > data.iloc[r,7]:
+            data = data.drop(r)
+            data = data.reset_index(drop = True)
+ 
+unique_batches = []
+LAL = []
+UAL = []
+ 
+for i in range(len(data['BatchID'])):
+    if data['BatchID'][i] in unique_batches:
+        pass
+    else:
+        unique_batches.append(data['BatchID'][i])
+        LAL.append(data['LAL'][i])
+        UAL.append(data['UAL'][i])
+       
+[print("Lot {}: LAL={} UAL={}".format(*row)) for row in zip(unique_batches, LAL, UAL)]
+ 
+keys = [k for k in data if k.startswith('NetWeight_')]
+data = pd.melt(data, id_vars=['BatchID'], value_vars= keys, value_name = 'NetWeight')
+ 
+data = data.drop(['variable'], axis = 1)
+ 
+order = data['BatchID'].unique()
+ 
+data = data.set_index([data.groupby('BatchID').cumcount(), 'BatchID'])['NetWeight'].unstack().reindex(order, axis = 1)
+data.index = np.arange(1, len(data) + 1)
+ 
+data = data.apply(pd.to_numeric)
+data = data.replace(0, np.NaN)
+ 
+#adding limits to data
+for batch, lal, ual in zip(unique_batches, LAL, UAL):
+    col_name = batch + "_limits"
+    data[col_name] = np.nan
+    data[col_name][1] = lal
+    data[col_name][2] = ual
+ 
+#open Excel
+ 
+data.to_csv('Line3_Seeq_export.csv')
+os.system("start EXCEL.EXE Line3_Seeq_export.csv")
+ 
+# #data.head(50)
