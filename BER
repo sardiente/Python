@@ -1,0 +1,112 @@
+#!/usr/local/bin/python3
+
+import re
+import pandas as pd
+from tabula import read_pdf
+from tabulate import tabulate
+import requests
+import pdfplumber
+import tkinter as tk
+import tkinter.ttk as ttk
+import customtkinter as ctk
+
+from tkinter import *
+from tkinter.ttk import *
+
+ctk.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
+ctk.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
+
+def graph():
+    print(filepath.get())
+
+def view_parts_washer_data():
+    pass
+
+def view_autoclave_data():
+    pass
+
+def add_data():
+    root_add_data_window = tk.Tk()
+    root_add_data_window.title('Batch End Report Graphical Tool')
+    root_add_data_window.geometry('%dx%d+%d+%d' % (width, height, x, y))
+    root_window.destroy()
+    show_data_button = Button(root_add_data_window,
+                             text = 'Graph',
+                             command = graph)
+    
+    filepath = tk.StringVar()
+    
+    filepath_area = Entry(root_add_data_window,
+                         width = 30,
+                         textvariable = filepath).place(x = 250, y = 275)
+    
+    show_data_label = tk.Label(root_add_data_window,
+                              text = "Please add BER filepath and click 'Graph'",
+                              font = 70)
+    
+    #function here that takes in a pdf file, checks if file is pdf, and checks if the lot already exists or not in database
+    
+    show_data_button.place(x = 350, y = 350)
+    show_data_label.place(x = 220, y = 200)
+
+def view_data():
+    initial_view_data_window = tk.Tk()
+    initial_view_data_window.title('Batch End Report Graphical Tool')
+    initial_view_data_window.geometry('%dx%d+%d+%d' % (width, height, x, y))
+    root_window.destroy()
+    
+    Autoclave_data_button = Button(initial_view_data_window,
+                                  text = 'Autoclave',
+                                  command = view_autoclave_data)
+    
+    Parts_Washer_data_button = Button(initial_view_data_window,
+                                     text = 'Parts Washer',
+                                     command = view_parts_washer_data)
+    
+    Autoclave_data_button.pack()
+    Parts_Washer_data_button.pack()
+    
+    #should lead to another window which has all the different systems buttons to view Autoclave, Parts Washer, SIP, COP
+
+def graph_data():
+    pass
+
+root_window = tk.Tk()
+filepath = tk.StringVar()
+
+width = 800
+height = 500
+
+screen_width = root_window.winfo_screenwidth()
+screen_height = root_window.winfo_screenheight()
+
+x = (screen_width/2) - (width/2)
+y = (screen_height/2) - (height/2)
+
+root_window.geometry('%dx%d+%d+%d' % (width, height, x, y))
+root_window.title('Batch End Report Graphical Tool')
+
+root_label = tk.Label(root_window,
+                  text = 'Pfizer MOD2 BER Graphical Tool',
+                  font = 30,
+                  fg = 'blue')
+
+
+add_data_button = Button(root_window, 
+                         text = 'Add data',
+                         command = add_data)
+
+view_data_button = Button(root_window, 
+                          text = 'View data',
+                          command = view_data)
+
+cancel_button = Button(root_window, 
+                       text = 'Cancel', 
+                       command = root_window.destroy)
+
+add_data_button.place(x = 150, y = 350)
+view_data_button.place(x = 350, y = 350)
+cancel_button.place(x = 550, y = 350)
+root_label.place(x = 265, y = 150)
+
+root_window.mainloop()
