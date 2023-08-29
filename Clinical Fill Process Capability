@@ -7,10 +7,10 @@ import os
 import math
 import warnings
 
-#Program calls Seeq to retrieve cilincal fill data from PI Historian and removes zero and negative fill weight values, cleans the data, and sets-up file
-#to be run in VBA for Porcess Capability calculation
+### Program calls Seeq to retrieve cilincal fill data from PI Historian, based on a targeted date range of drug product fill times, removes zero and negative fill weight values, cleans the data, reformats file,
+#### sends datafile directly to Excel, and opens VBA script macro for Porcess Capability calculation.
 
-#Company-specific information redacted including variables, names, and addresses
+#### Company-specific information redacted including variables, names, and addresses
  
 address = 'https://address'
 login_file = r'C:\Users\Username\Location\Location\log.txt'
